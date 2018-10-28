@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Stacked graph</title>
+    </head>
+<style>
+#my_canvas 
+{
+    width: 800px;
+    height: 500px;
+}
+</style>
+<div id='d1' style="position:absolute; top:0px; left:100px; z-index:1">  
+<canvas id="my_canvas" width="2000" height="1250">
+	</div>
+<div  style="position:absolute; top:500px; left:450px; z-index:1">  
+<input type="button" value="run" onclick="print()">
+</div>
+<div  style="position:absolute; top:500px; left:500px; z-index:1">  
+<select id="layer_num">
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">11</option>
+  <option value="12">12</option>
+  <option value="13">13</option>
+  <option value="14">14</option>
+  <option value="15">15</option>
+  <option value="16">16</option>  
+  <option value="17">17</option>
+  <option value="18">18</option>
+  <option value="19">19</option>
+  <option value="20">20</option>    
+  <option value="21">21</option>
+  <option value="22">22</option>  
+  <option value="23">23</option>
+  <option value="24">24</option>
+</select>
+</div>
+	    <body>
+        <script>
+            var canvas = document.getElementById( 'my_canvas' );
+            var ctx = canvas.getContext( '2d' );
+
+      
+
+            function drawCurvePath( ctx, start, end, curveness ) {
+            var cp = [
+            ( start[ 0 ] + end[ 0 ] ) / 2 - ( start[ 1 ] - end[ 1 ] ) * curveness,
+            ( start[ 1 ] + end[ 1 ] ) / 2 - ( end[ 0 ] - start[ 0 ] ) * curveness
+             ];
+            ctx.moveTo( start[ 0 ], start[ 1 ] );
+            ctx.quadraticCurveTo( 
+            cp[ 0 ], cp[ 1 ],
+            end[ 0 ], end[ 1 ]
+            );
+            }
+            
+            function curve(start,end)
+            {
+            	this.start=start;
+            	this.end=end;
+            }
+            
+            
+            
+            function randNum(minnum , maxnum){
+             return Math.floor(minnum + Math.random() * (maxnum - minnum));
+            }
+            
+            
+            
+            
+            
+             function new_line(coefficient,list_points)
+            {
+            	//this function generates 10 random points on the graph
+            	var x=0;
+                var control_one=randNum(0,300);
+            	var control_two=randNum(300,600);
+            	var control_three=randNum(600,900);
+            	var control_four=randNum(900,1200);
+            	var control_five=randNum(1200,1700);
+            	var control_six=randNum(1700,2000);
+            	var max=0;
+            	//var y=coefficient*Math.sin(x/100)+shift;
+            	var y=coefficient*x*(x-control_one)*(x-control_two)*(x-control_three)*(x-control_four)*(x-control_five)*(x-control_six)*(x-2000);
+                for(i=0;i<5200;i++)
+                {
+                  x+=0.4;
+                   //y=coefficient*Math.sin(x/100)+shift+100;
+                   y=coefficient*x*(x-control_one)*(x-control_two)*(x-control_three)*(x-control_four)*(x-control_five)*(x-control_six)*(x-2000);
+                  if(y<0&&Math.abs(y)>max)
+                   max=Math.abs(y);
+                }
+                var new_y=coefficient*new_x*(new_x-control_one)*(new_x-control_two)*(new_x-control_three)*(new_x-control_four)*(new_x-control_five)*(new_x-control_six)*(new_x-2000)+max;
+                var new_x=0;
+                for(i=0;i<5200;i++)
+                {
+                  var point=[];
+                  point.push(new_x);
+                  point.push(new_y);
+                  new_x+=0.4;
+                   new_y=coefficient*new_x*(new_x-control_one)*(new_x-control_two)*(new_x-control_three)*(new_x-control_four)*(new_x-control_five)*(new_x-control_six)*(new_x-2000)+max;
+                  list_points.push(point);
+                }
+                
+            }
+             
+             
+          
+              
+            // console.log(list_points);
+             
+            function draw(list_points,color)
+            {
+               for(i=0;i<list_points.length-1;i++)
+               {
+            	 ctx.lineWidth = 0;
+                 ctx.strokeStyle = color;
+                 ctx.beginPath();
+            	 drawCurvePath( ctx, list_points[i], list_points[i+1], -0.3 );
+            	 ctx.stroke();
+            	 ctx.closePath();
+                }
+            }
+            
+            
+            function fill_area(list_points,list_points_new,color)
+            {
+               for(i=0;i<list_points.length;i++)
+               {
+            	 ctx.lineWidth = 2;
+                 ctx.strokeStyle = color;
+                 ctx.beginPath();
+            	 ctx.moveTo(list_points[i][0],list_points[i][1]);
+                 ctx.lineTo(list_points_new[i][0],list_points_new[i][1]);
+            	 ctx.stroke();
+            	 ctx.closePath();
+                }
+            }
+            
+            function color(R,G,B)
+            {
+            	this.R=R;
+            	this.G=G;
+            	this.B=B;
+            }
+            
+            function color_select(pre_color)
+            {
+            	var new_color = new color();
+            	new_color.R=pre_color.R;
+            	new_color.G=pre_color.G-10;
+            	new_color.B=pre_color.B-10;
+            	return new_color;
+            	
+            }
+             
+            
+                 
+                 
+                function print()
+                {
+                	
+                 var c=document.getElementById("my_canvas");  
+                 var cxt=c.getContext("2d");  
+                 c.height=c.height;  
+ 	             var v = document.getElementById("layer_num").value;
+                 var c=parseInt(v);
+                 var default_coef=0.000000000000000000005/c;  
+                 var coef=0.000000000000000000014/c;   
+                 var list_points=new Array();
+                 new_line(default_coef,list_points);
+                 //buttom line
+                 var list_points_new_b=new Array();
+                 //top line
+                 var list_points_new_t=new Array();
+                 var temp_list=new Array();
+                 //flag to record last drawing direction
+                 var flag="b";
+               
+
+                 new_line(default_coef,temp_list);
+                 
+                 for(i=0;i<5200;i++)
+                 {
+                   list_points[i][1]+=500;
+                 }
+                 
+                 
+                 for(i=0;i<5200;i++)
+                 {
+                   var new_p=[];
+                   new_p.push(list_points[i][0]);
+                   new_p.push(list_points[i][1]+temp_list[i][1]);
+                   list_points_new_b.push(new_p);
+                 }
+                 
+                 
+                 for(z=0;z<5200;z++)
+                 {
+                   var new_p=[];
+                   new_p.push(list_points[z][0]);
+                   new_p.push(list_points[z][1]);
+                   list_points_new_t.push(new_p);
+                 }
+                 
+                 
+                 //set initial color
+                 var init_color=new color(150,255,255); 
+                 var color_string="#"+init_color.R.toString(16)+
+                                   init_color.G.toString(16)+
+                                   init_color.B.toString(16);
+                 console.log(color_string);
+                 fill_area(list_points,list_points_new_b,color_string);
+                 
+                 c=parseInt(v)-1;
+                 
+                 //////////////////////////////////////////////////////
+
+                  while(c>0)
+                  {
+                    list_points=[];
+                   for(z=0;z<5200;z++)
+                   {
+                    var new_p=[];
+                    if(flag==="t")
+                    {
+                     new_p.push(list_points_new_b[z][0]);
+                     new_p.push(list_points_new_b[z][1]);
+                     list_points.push(new_p);
+                    }
+                    else if(flag==="b")
+                    {
+                     new_p.push(list_points_new_t[z][0]);
+                     new_p.push(list_points_new_t[z][1]);
+                     list_points.push(new_p);
+                    }
+                   }
+                   
+                   if(flag==="t")
+                   {
+                    list_points_new_b=[];
+                   }
+                   else if(flag==="b")
+                   {
+                    list_points_new_t=[];
+                   }
+                   temp_list=[];
+
+                  new_line(coef,temp_list);
+                  for(q=0;q<5200;q++)
+                  {
+                   var new_p=[];
+                   if(flag==="t")
+                   {
+                    new_p.push(list_points[q][0]);
+                    new_p.push(list_points[q][1]+temp_list[q][1]);
+                    list_points_new_b.push(new_p);
+                   }
+                   else if(flag==="b")
+                   {
+                    new_p.push(list_points[q][0]);
+                    new_p.push(list_points[q][1]-temp_list[q][1]);
+                    list_points_new_t.push(new_p);
+                   }
+                   
+                  }
+                  
+                  init_color=color_select(init_color);
+                  var color_string="#"+init_color.R.toString(16)+
+                                   init_color.G.toString(16)+
+                                   init_color.B.toString(16);
+                  if(flag==="t")
+                  {
+                   fill_area(list_points,list_points_new_b,color_string);
+                  }
+                  else if(flag==="b")
+                  {
+                   fill_area(list_points,list_points_new_t,color_string);
+                  }
+                  
+                   //console.log(list_points);
+                   //console.log(list_points_new);
+                   
+                   c--;
+                   
+                   //renew flag value
+                  if(flag==="t")
+                  {
+                    flag="b";
+                  }
+                  else if(flag==="b")
+                  {
+                  	flag="t";
+                  }
+                  
+                  
+                  }
+                  
+                  
+                 }
+                  
+                 
+        </script>
+    </body>
+</html>
+
